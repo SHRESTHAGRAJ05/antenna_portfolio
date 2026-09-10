@@ -20,14 +20,22 @@ const FOOTER_LINKS = [
 /* ============================================================ */
 
 function renderNav(){
-  const current = window.location.pathname.split("/").pop() || "index.html";
+  const path = window.location.pathname;
+  const current = path.split("/").pop() || "index.html";
+  const inAntennas = path.includes("/antennas/");
   const mount = document.getElementById("site-nav");
   if (!mount) return;
+  const brandHref = inAntennas ? "../index.html" : "index.html";
   mount.innerHTML = `
     <div class="wrap">
-      <a class="brand" href="index.html"><span class="dot"></span>field notes / antennas</a>
+      <a class="brand" href="${brandHref}"><span class="dot"></span>field notes / antennas</a>
       <div class="navlinks">
-        ${NAV_LINKS.map(l => `<a href="${l.href}" class="${l.href === current ? 'active' : ''}">${l.label}</a>`).join("")}
+        ${NAV_LINKS.map(l => {
+          const href = inAntennas ? "../" + l.href : l.href;
+          // topic pages live under /antennas/, discovered via "Antennas Around You"
+          const isActive = inAntennas ? l.href === "everyday.html" : l.href === current;
+          return `<a href="${href}" class="${isActive ? 'active' : ''}">${l.label}</a>`;
+        }).join("")}
       </div>
     </div>`;
 }
@@ -44,31 +52,11 @@ function renderFooter(){
     </div>`;
 }
 
-/* Popup CTA — shown once per page load, dismissible, no page-nag on every scroll */
-function initPopup(){
-  if (document.body.dataset.noPopup === "true") return;
-  const current = window.location.pathname.split("/").pop() || "index.html";
-  if (current === "everyday.html") return; // don't advertise the page you're already on
-
-  const popup = document.createElement("div");
-  popup.id = "popup";
-  popup.innerHTML = `
-    <button class="popup-close" aria-label="Dismiss">×</button>
-    <h4>Want to know what antennas you're surrounded with?</h4>
-    <p>Your phone, earbuds, watch, car, and the cell tower down the street are all quietly using different antenna types.</p>
-    <a class="btn solid" href="everyday.html">Take a look →</a>
-  `;
-  document.body.appendChild(popup);
-
-  popup.querySelector(".popup-close").addEventListener("click", () => {
-    popup.classList.remove("show");
-  });
-
-  setTimeout(() => popup.classList.add("show"), 1200);
-}
+/* NOTE: the old auto-popup that nagged on every page load has been removed.
+   "Antennas Around You" is now a normal, intentional nav destination —
+   see the "Explore" card on the homepage and the nav bar link. */
 
 document.addEventListener("DOMContentLoaded", () => {
   renderNav();
   renderFooter();
-  initPopup();
 });

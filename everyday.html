@@ -67,13 +67,15 @@ const EVERYDAY_GROUPS = [
         icon: "router",
         found_in: "Wi-Fi router",
         title: "Monopole or dipole antenna",
-        desc: "Those external sticks on a router are simple monopole or dipole antennas — cheap, easy to tune, and good at radiating fairly evenly in every direction across the room."
+        desc: "Those external sticks on a router are simple monopole or dipole antennas — cheap, easy to tune, and good at radiating fairly evenly in every direction across the room.",
+        topic: "dipole"
       },
       {
         icon: "tv",
         found_in: "TV reception",
         title: "Dipole / Yagi-Uda antenna",
-        desc: "Rooftop and indoor TV antennas are usually Yagi-Uda designs — a driven dipole plus extra parasitic elements that add directional gain, pointing toward the broadcast tower for a cleaner signal."
+        desc: "Rooftop and indoor TV antennas are usually Yagi-Uda designs — a driven dipole plus extra parasitic elements that add directional gain, pointing toward the broadcast tower for a cleaner signal.",
+        topic: "yagi-uda"
       }
     ]
   },
@@ -85,13 +87,15 @@ const EVERYDAY_GROUPS = [
         icon: "gps",
         found_in: "Car GPS",
         title: "Microstrip patch antenna",
-        desc: "GPS needs to receive circularly polarized signals from satellites overhead, and a small circularly-polarized patch antenna tucked under the dashboard or in the roof module does exactly that."
+        desc: "GPS needs to receive circularly polarized signals from satellites overhead, and a small circularly-polarized patch antenna tucked under the dashboard or in the roof module does exactly that.",
+        topic: "patch"
       },
       {
         icon: "car-roof",
         found_in: "Car roof (shark-fin)",
         title: "Multiband / patch antenna array",
-        desc: "That shark-fin bump on a car roof usually hides several antennas at once — GPS, cellular, and radio — often built as stacked or multiband patch elements sharing one housing."
+        desc: "That shark-fin bump on a car roof usually hides several antennas at once — GPS, cellular, and radio — often built as stacked or multiband patch elements sharing one housing.",
+        topic: "patch"
       }
     ]
   },
@@ -103,13 +107,15 @@ const EVERYDAY_GROUPS = [
         icon: "tower",
         found_in: "Cell tower",
         title: "Sector patch antenna arrays",
-        desc: "Those rectangular panels on a cell tower are arrays of patch antennas, each panel covering a 60–120° sector — three panels typically cover all 360° around the tower."
+        desc: "Those rectangular panels on a cell tower are arrays of patch antennas, each panel covering a 60–120° sector — three panels typically cover all 360° around the tower.",
+        topic: "array"
       },
       {
         icon: "dish",
         found_in: "Satellite communication",
         title: "Parabolic reflector (satellite dish)",
-        desc: "A satellite dish isn't the antenna itself — it's a reflector that focuses incoming signal onto a small feed antenna at its focal point, giving huge effective gain from a passive curved surface."
+        desc: "A satellite dish isn't the antenna itself — it's a reflector that focuses incoming signal onto a small feed antenna at its focal point, giving huge effective gain from a passive curved surface.",
+        topic: "parabolic"
       }
     ]
   }
@@ -127,23 +133,52 @@ const ICONS = {
   dish: `<svg viewBox="0 0 48 48" fill="none"><path d="M6 30 C6 16 42 16 42 30" stroke="#C97C4A" stroke-width="2.5" fill="none"/><line x1="24" y1="23" x2="24" y2="10" stroke="#63C7DE" stroke-width="2"/><circle cx="24" cy="10" r="2" fill="#63C7DE"/><line x1="24" y1="30" x2="24" y2="42" stroke="#8FA3BE" stroke-width="2"/></svg>`
 };
 
+const TOPIC_LABELS = {
+  "yagi-uda": "Yagi-Uda Antenna",
+  "patch": "Microstrip Patch Antenna",
+  "dipole": "Dipole Antenna",
+  "horn": "Horn Antenna",
+  "parabolic": "Parabolic Reflector",
+  "helical": "Helical Antenna",
+  "array": "Antenna Array"
+};
+
 const root = document.getElementById("everyday-root");
+
+function itemCard(item){
+  const inner = `
+    ${ICONS[item.icon] || ""}
+    <span class="found-in">FOUND IN: ${item.found_in.toUpperCase()}</span>
+    <h4>${item.title}${item.topic ? ' <span class="card-arrow">→</span>' : ''}</h4>
+    <p>${item.desc}</p>
+  `;
+  return item.topic
+    ? `<a class="item-card" href="antennas/antenna.html?type=${item.topic}">${inner}</a>`
+    : `<div class="item-card">${inner}</div>`;
+}
+
 root.innerHTML = EVERYDAY_GROUPS.map(group => `
   <div class="everyday-group">
     <h2>${group.title}</h2>
     <div class="group-sub">${group.sub}</div>
     <div class="everyday-grid">
-      ${group.items.map(item => `
-        <div class="item-card">
-          ${ICONS[item.icon] || ""}
-          <span class="found-in">FOUND IN: ${item.found_in.toUpperCase()}</span>
-          <h4>${item.title}</h4>
-          <p>${item.desc}</p>
-        </div>
+      ${group.items.map(itemCard).join("")}
+    </div>
+  </div>
+`).join("") + `
+  <div class="everyday-group">
+    <h2>Browse all antenna topics</h2>
+    <div class="group-sub">Deep-dive pages covering structure, working principle, and applications for each type.</div>
+    <div class="topics-strip">
+      ${Object.keys(TOPIC_LABELS).map(slug => `
+        <a class="nav-card" href="antennas/antenna.html?type=${slug}">
+          <div class="tag">TOPIC</div>
+          <h3>${TOPIC_LABELS[slug]} <span class="card-arrow">→</span></h3>
+        </a>
       `).join("")}
     </div>
   </div>
-`).join("");
+`;
 </script>
 
 </body>

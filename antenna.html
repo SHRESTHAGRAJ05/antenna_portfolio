@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antenna Topic — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="rf-bg" id="rf-bg"></div>
+
+<nav id="site-nav"></nav>
+
+<div id="page-root">
+  <div class="wrap" style="padding-top:32px;">
+    <p class="fine mono">Loading topic…</p>
+  </div>
+</div>
+
+<footer id="site-footer"></footer>
+
+<script src="../common.js"></script>
+<script src="data.js"></script>
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("type");
+  const topic = ANTENNA_TOPICS[slug];
+  const root = document.getElementById("page-root");
+
+  if (!topic) {
+    root.innerHTML = `
+      <div class="wrap" style="padding:60px 0;">
+        <h1>Topic not found</h1>
+        <p style="color:var(--ink-dim);margin-top:10px;">No antenna topic matches "${slug || ''}".</p>
+        <a class="btn solid" style="margin-top:20px;display:inline-block;" href="../everyday.html">← Back to Antennas Around You</a>
+      </div>`;
+    return;
+  }
+
+  document.title = topic.name + " — Field Notes";
+
+  root.innerHTML = `
+    <div class="topic-hero">
+      <div class="wrap">
+        <a class="topic-back" href="../everyday.html">← All antenna topics</a>
+        <div class="kicker mono">ANTENNA TOPIC</div>
+        <h1>${topic.name}</h1>
+        <p class="tagline">${topic.tagline}</p>
+        <div class="stat-row">
+          ${topic.stats.map(s => `<div class="stat-chip">${s.label}: <b>${s.value}</b></div>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker mono">Overview</div><h2>What it is, and why it's used.</h2></div>
+        <div class="theory-block">${topic.overview}</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker mono">Structure</div><h2>The major components.</h2></div>
+        <div class="structure-grid">
+          ${topic.structure.map(s => `<div class="structure-card"><h4>${s.title}</h4><p>${s.desc}</p></div>`).join("")}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker mono">Working Principle</div><h2>How it actually radiates.</h2></div>
+        <div class="theory-block">${topic.working}</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker mono">Characteristics</div><h2>What to expect, at a glance.</h2></div>
+        <div class="characteristics-grid">
+          ${topic.characteristics.map(c => `<div class="characteristic-pill"><span class="label">${c.label.toUpperCase()}</span><span class="value">${c.value}</span></div>`).join("")}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker mono">Applications</div><h2>Where you'll actually find one.</h2></div>
+        <div class="app-grid">
+          ${topic.applications.map(a => `<div class="app-card"><h4>${a.title}</h4><p>${a.desc}</p></div>`).join("")}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker mono">Field Notes</div><h2>A couple of things worth knowing.</h2></div>
+        <div class="facts-row">
+          ${topic.facts.map(f => `<div class="fact-card"><span class="tag">FACT</span>${f}</div>`).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+
+  renderBackground(topic.bg);
+
+  function renderBackground(type){
+    const bg = document.getElementById("rf-bg");
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) { bg.style.display = "none"; return; }
+
+    if (type === "ripple") {
+      bg.innerHTML = `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+        <g transform="translate(400,300)">
+          <circle class="rf-ring" r="260"/>
+          <circle class="rf-ring" r="260"/>
+          <circle class="rf-ring" r="260"/>
+          <circle class="rf-ring" r="260"/>
+        </g>
+      </svg>`;
+    } else if (type === "sweep") {
+      bg.innerHTML = `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+        <g transform="translate(400,300)">
+          <circle r="260" fill="none" stroke="#1F3350" stroke-width="1"/>
+          <circle r="180" fill="none" stroke="#1F3350" stroke-width="1"/>
+          <circle r="100" fill="none" stroke="#1F3350" stroke-width="1"/>
+          <g class="rf-sweep">
+            <path d="M0,0 L260,0 A260,260 0 0,0 184,-184 Z" fill="#63C7DE" opacity="0.18"/>
+          </g>
+        </g>
+      </svg>`;
+    } else {
+      bg.innerHTML = `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+        <line x1="0" y1="150" x2="800" y2="150" stroke="#1F3350" stroke-width="1"/>
+        <line x1="0" y1="300" x2="800" y2="300" stroke="#1F3350" stroke-width="1"/>
+        <line x1="0" y1="450" x2="800" y2="450" stroke="#1F3350" stroke-width="1"/>
+        <circle class="rf-pulse" cx="0" cy="150" r="6" fill="#C97C4A"/>
+        <circle class="rf-pulse" cx="0" cy="150" r="6" fill="#C97C4A"/>
+        <circle class="rf-pulse" cx="0" cy="300" r="6" fill="#63C7DE"/>
+        <circle class="rf-pulse" cx="0" cy="300" r="6" fill="#63C7DE"/>
+        <circle class="rf-pulse" cx="0" cy="450" r="6" fill="#C97C4A"/>
+        <circle class="rf-pulse" cx="0" cy="450" r="6" fill="#C97C4A"/>
+      </svg>`;
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
