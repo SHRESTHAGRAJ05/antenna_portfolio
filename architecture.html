@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Architecture — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav id="site-nav"></nav>
+
+<div class="page-header">
+  <div class="wrap">
+    <div class="kicker mono">03 — System Architecture</div>
+    <h1>The FPGA never touches RF — it just decides.</h1>
+    <p>Digital control and RF signal are on entirely separate paths. An HDL state machine sets the diode bias pattern; a driver and bias network translate that into the DC conditions each diode needs, without loading the RF path.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="flow">
+      <div class="flow-block accent">FPGA<span class="flow-sub">HDL state machine</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block">Driver / level shift<span class="flow-sub">logic → bias current</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block">Bias network<span class="flow-sub">RF choke + DC block</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block">PIN diodes<span class="flow-sub">D1, D2</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-block accent">Antenna<span class="flow-sub">radiated polarization</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker mono">Why FPGA, specifically</div>
+      <h2>Not talked about much — which is exactly the point.</h2>
+    </div>
+    <div class="theory-block">
+      Most published polarization reconfigurable antenna designs focus almost entirely on the RF structure — the slot geometry, the diode placement, the switching mechanism — while the digital control architecture that actually drives the switching gets little attention. Here, the FPGA generates the digital bias pattern for the PIN diodes through a driver stage and a bias network, letting the polarization state be selected programmatically through an HDL-based state machine rather than fixed, hand-wired control. That makes the switching sequence configurable and scalable to more diodes or more polarization states without redesigning the control hardware.
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="common.js"></script>
+</body>
+</html>

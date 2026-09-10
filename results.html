@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expected Results — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav id="site-nav"></nav>
+
+<div class="page-header">
+  <div class="wrap">
+    <div class="kicker mono">05 — Expected Results</div>
+    <h1>What the simulation should show.</h1>
+    <p>CST verification is in progress — these are representative trends based on the design theory and comparable published designs, not measured data.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="results-grid">
+      <div class="chart-card">
+        <span class="stamp">ILLUSTRATIVE</span>
+        <h4>Return loss (S11) — all three states</h4>
+        <svg viewBox="0 0 300 160" width="100%">
+          <line x1="20" y1="20" x2="20" y2="140" stroke="#1F3350"/>
+          <line x1="20" y1="140" x2="290" y2="140" stroke="#1F3350"/>
+          <line x1="20" y1="100" x2="290" y2="100" stroke="#3E5C82" stroke-dasharray="2 3"/>
+          <text x="24" y="97" fill="#63C7DE" font-size="9" font-family="IBM Plex Mono">-10 dB</text>
+          <path d="M20,60 C90,60 110,135 150,135 C190,135 210,60 280,60" fill="none" stroke="#C97C4A" stroke-width="2"/>
+          <path d="M20,55 C95,55 115,125 155,125 C195,125 205,55 280,55" fill="none" stroke="#E39A66" stroke-width="2" stroke-dasharray="4 2"/>
+          <path d="M20,58 C85,58 105,128 145,128 C185,128 215,58 280,58" fill="none" stroke="#63C7DE" stroke-width="2" stroke-dasharray="1 3"/>
+          <text x="150" y="152" fill="#8FA3BE" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">2.0 — 2.8 GHz</text>
+        </svg>
+      </div>
+      <div class="chart-card">
+        <span class="stamp">ILLUSTRATIVE</span>
+        <h4>Axial ratio — CP states only</h4>
+        <svg viewBox="0 0 300 160" width="100%">
+          <line x1="20" y1="20" x2="20" y2="140" stroke="#1F3350"/>
+          <line x1="20" y1="140" x2="290" y2="140" stroke="#1F3350"/>
+          <line x1="20" y1="105" x2="290" y2="105" stroke="#3E5C82" stroke-dasharray="2 3"/>
+          <text x="24" y="102" fill="#63C7DE" font-size="9" font-family="IBM Plex Mono">3 dB</text>
+          <path d="M20,40 C110,120 130,135 155,136 C180,135 200,110 280,45" fill="none" stroke="#E39A66" stroke-width="2" stroke-dasharray="4 2"/>
+          <path d="M20,45 C105,118 125,133 150,134 C175,133 195,112 280,50" fill="none" stroke="#63C7DE" stroke-width="2" stroke-dasharray="1 3"/>
+          <text x="150" y="152" fill="#8FA3BE" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">2.0 — 2.8 GHz</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="theory-block" style="margin-top:28px;">
+      <strong>Once your CST simulations are done:</strong> export each plot as a PNG (Post-Processing → right-click plot → Export → PNG), add the image files to this same folder, then replace the two <span class="mono">&lt;svg&gt;...&lt;/svg&gt;</span> blocks above with <span class="mono">&lt;img src="your-file.png" style="width:100%; border-radius:4px;"&gt;</span> and delete the "ILLUSTRATIVE" stamp.
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="common.js"></script>
+</body>
+</html>

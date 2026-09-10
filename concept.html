@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Concept — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav id="site-nav"></nav>
+
+<div class="page-header">
+  <div class="wrap">
+    <div class="kicker mono">01 — The Concept</div>
+    <h1>Truncate a corner, and the patch stops being symmetric.</h1>
+    <p>A square patch antenna radiates a single linear polarization by default. Cut two opposite corners diagonally, and you excite two orthogonal modes 90° apart — the recipe for circular polarization. Here, those cuts aren't permanent: they're gaps bridged by PIN diodes.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="card-grid-2">
+      <svg viewBox="0 0 320 260" width="100%">
+        <rect x="20" y="20" width="280" height="220" rx="4" fill="#0F1A2C" stroke="#1F3350"/>
+        <rect x="60" y="50" width="200" height="160" fill="#1B3252" stroke="#3E5C82" stroke-width="1.5"/>
+        <line x1="60" y1="80" x2="90" y2="50" stroke="#C97C4A" stroke-width="4" stroke-linecap="round"/>
+        <line x1="230" y1="50" x2="260" y2="80" stroke="#C97C4A" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="75" cy="65" r="4" fill="#070B16" stroke="#E39A66" stroke-width="2"/>
+        <circle cx="245" cy="65" r="4" fill="#070B16" stroke="#E39A66" stroke-width="2"/>
+        <text x="75" y="45" fill="#8FA3BE" font-size="11" font-family="IBM Plex Mono" text-anchor="middle">D1</text>
+        <text x="245" y="45" fill="#8FA3BE" font-size="11" font-family="IBM Plex Mono" text-anchor="middle">D2</text>
+        <line x1="160" y1="130" x2="160" y2="235" stroke="#63C7DE" stroke-width="2" stroke-dasharray="3 3"/>
+        <circle cx="160" cy="235" r="3" fill="#63C7DE"/>
+        <text x="167" y="230" fill="#63C7DE" font-size="11" font-family="IBM Plex Mono">feed</text>
+      </svg>
+      <div class="schematic-notes">
+        <dl>
+          <dt>Patch</dt>
+          <dd>49.4 × 47.7 mm square, copper on Rogers RT/duroid 5880 (εr = 2.2, h = 1.575 mm), resonant near 2.4 GHz.</dd>
+          <dt>Slots</dt>
+          <dd>Diagonal cuts near two opposite corners, each stopping short of the patch interior to leave a small connection gap.</dd>
+          <dt>Diodes</dt>
+          <dd>A PIN diode bridges each gap. ON ≈ 2 Ω + 0.3 nH. OFF ≈ 0.15 pF. Modelled as lumped RLC elements in CST.</dd>
+          <dt>Feed</dt>
+          <dd>Coaxial probe positioned along the patch diagonal, 50 Ω, offset from center for correct mode excitation.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker mono">02 — Switching Sequence</div>
+      <h2>Three states, one antenna, zero moving parts.</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Both diodes ON</h3>
+        <p>The patch stays fully symmetric. A single dominant mode radiates — linear polarization, same as a conventional patch.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>One diode OFF</h3>
+        <p>The corresponding corner becomes an open truncation. Two orthogonal modes of near-equal amplitude appear, 90° apart in phase.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Circular polarization</h3>
+        <p>Which corner is open sets the rotation sense — RHCP or LHCP — verified by axial ratio below 3 dB at boresight.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker mono">Field Notes</div>
+      <h2>Terms worth knowing before you read the plots.</h2>
+    </div>
+    <div class="glossary">
+      <div class="gcard">
+        <div class="tag mono">METRIC</div>
+        <h3>Axial Ratio</h3>
+        <p>Ratio of the major to minor axis of the polarization ellipse. ≤ 3 dB at boresight is the usual bar for "good enough" circular polarization.</p>
+      </div>
+      <div class="gcard">
+        <div class="tag mono">CONCEPT</div>
+        <h3>LP vs. CP</h3>
+        <p>Linear polarization confines the E-field to one plane. Circular polarization rotates it — clockwise (RHCP) or counter-clockwise (LHCP) — as the wave travels.</p>
+      </div>
+      <div class="gcard">
+        <div class="tag mono">COMPONENT</div>
+        <h3>PIN Diode Switching</h3>
+        <p>Forward-biased, a PIN diode looks like a small resistor; reverse-biased, a small capacitor. That's enough to make or break an RF current path.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="common.js"></script>
+</body>
+</html>

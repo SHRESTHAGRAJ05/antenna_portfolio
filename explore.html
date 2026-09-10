@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore Antenna Basics — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav id="site-nav"></nav>
+
+<div class="page-header">
+  <div class="wrap">
+    <div class="kicker mono">Learn — Interactive</div>
+    <h1>Pick an antenna. Learn it two ways.</h1>
+    <p>Choose a type, then decide whether you want the fundamentals or the reconfigurable version of the story.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="explorer" id="explorer">
+      <div class="explorer-crumb" id="explorer-crumb" style="display:none;">
+        <button class="back" id="explorer-back">← back</button>
+        <span id="explorer-crumb-text"></span>
+      </div>
+
+      <div id="step-type">
+        <div class="explorer-title">Step 1 — Choose an antenna type</div>
+        <div class="explorer-sub">Each of these behaves completely differently — different currents, different patterns, different use cases.</div>
+        <div class="type-grid" id="type-grid"></div>
+      </div>
+
+      <div id="step-mode" style="display:none;">
+        <div class="explorer-title">Step 2 — What do you want to see?</div>
+        <div class="explorer-sub" id="mode-sub"></div>
+        <div class="mode-grid">
+          <div class="mode-card" tabindex="0" data-mode="normal">
+            <div class="tag">OPTION A</div>
+            <h3>Normal working</h3>
+            <p>How it's built, how current flows, its radiation pattern, real-world uses, and a few fun facts.</p>
+          </div>
+          <div class="mode-card" tabindex="0" data-mode="reconfig">
+            <div class="tag">OPTION B</div>
+            <h3>Reconfigurability</h3>
+            <p>How this antenna type can be made electronically adaptable, and where that field is headed.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-content" style="display:none;"></div>
+    </div>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+
+<script src="common.js"></script>
+<script>
+/* ============================================================
+   EDIT ME: to add a new antenna type, add an entry to both
+   `icons` and `antennaData` below with a matching key, and one
+   line in `reconIntros`. Everything else builds itself.
+   ============================================================ */
+(function(){
+  const icons = {
+    wire: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="8" y1="32" x2="56" y2="32" stroke="#C97C4A" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="32" cy="32" r="4" fill="#63C7DE"/>
+      <line x1="32" y1="32" x2="32" y2="46" stroke="#8FA3BE" stroke-width="2"/>
+    </svg>`,
+    patch: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="44" height="44" rx="2" fill="none" stroke="#1F3350" stroke-width="2"/>
+      <rect x="18" y="18" width="28" height="28" fill="#C97C4A" opacity="0.85"/>
+      <circle cx="32" cy="40" r="2.5" fill="#63C7DE"/>
+    </svg>`,
+    loop: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="20" fill="none" stroke="#C97C4A" stroke-width="3"/>
+      <line x1="32" y1="52" x2="32" y2="60" stroke="#8FA3BE" stroke-width="2"/>
+      <circle cx="32" cy="12" r="2.5" fill="#63C7DE"/>
+    </svg>`,
+    helical: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="52" width="48" height="6" rx="1" fill="#1F3350"/>
+      <path d="M20 52 C20 44 44 44 44 36 C44 28 20 28 20 20 C20 12 44 12 44 8" stroke="#C97C4A" stroke-width="2.5" fill="none"/>
+      <circle cx="44" cy="8" r="2.5" fill="#63C7DE"/>
+    </svg>`
+  };
+
+  const antennaData = {
+    wire: {
+      name: "Wire Antenna (Dipole / Monopole)",
+      blurb: "The oldest and simplest radiator — just a straight conductor fed at one point.",
+      facts: [
+        "The classic 'rabbit ear' TV antenna was two dipole arms sized to exactly half a wavelength.",
+        "Marconi's 1901 transatlantic transmission used a wire antenna spanning hundreds of meters.",
+        "A quarter-wave monopole over a ground plane behaves electrically like a full half-wave dipole — the ground 'mirrors' the missing half."
+      ],
+      theory: "A half-wave dipole is simply a straight wire, split at the center and fed there, with each arm roughly a quarter-wavelength long. Current peaks at the feed and tapers to zero at the tips, producing a doughnut-shaped radiation pattern with maximum radiation broadside to the wire and nulls along its axis. Feed-point impedance sits near <strong>73 Ω</strong> at resonance, close enough to 50/75 Ω lines that little matching is needed. Its simplicity is exactly why it still shows up everywhere — broadcast towers, walkie-talkies, and ham radio masts."
+    },
+    patch: {
+      name: "Microstrip Patch Antenna",
+      blurb: "A flat metal patch on a dielectric substrate, low-profile and easy to mass-produce.",
+      facts: [
+        "Patch antennas are why modern phones don't need a visible antenna sticking out anymore.",
+        "The concept dates to 1953, but stayed impractical until low-loss PCB substrates matured in the 1970s.",
+        "Almost every GPS receiver on Earth uses a circularly polarized patch antenna to track satellites reliably."
+      ],
+      theory: "A microstrip patch behaves like a leaky resonant cavity: the patch and ground plane form two radiating slots at opposite edges, spaced roughly half a guided wavelength apart. Because the whole structure is just metal etched on a PCB, it's thin, light, and cheap to manufacture in volume — the tradeoff is a narrower bandwidth and lower efficiency than a wire antenna of similar size. It radiates mainly broadside, which makes it the default choice for GPS, WLAN, and satellite terminals where a low profile matters more than raw bandwidth."
+    },
+    loop: {
+      name: "Loop Antenna",
+      blurb: "A closed conducting loop that couples primarily to the magnetic field, not the electric field.",
+      facts: [
+        "Small loop antennas are called 'magnetic' antennas because they respond mainly to the magnetic field component of a wave.",
+        "Car and portable AM radios often hide a small ferrite-core loop antenna inside the case.",
+        "Large 'magnetic loop' antennas are prized by ham radio operators for being compact yet efficient even at very low frequencies."
+      ],
+      theory: "When a loop's circumference is much smaller than a wavelength, current flows nearly uniformly around it, and the antenna radiates a figure-eight pattern with nulls in the plane of the loop — the opposite orientation to a dipole's pattern. This magnetic-dominant behavior makes small loops naturally good at rejecting local electric-field noise, which is exactly why they're favored for AM broadcast reception and near-field RFID readers, where interference rejection matters more than gain."
+    },
+    helical: {
+      name: "Helical Antenna",
+      blurb: "A wire wound into a helix over a ground plane — the natural way to generate circular polarization.",
+      facts: [
+        "Helical antennas are a default choice for satellite ground stations because they inherently produce circular polarization.",
+        "Spacecraft have carried helical antennas since the earliest satellite missions.",
+        "A helix can run in two very different modes — 'normal mode' (small, nearly omnidirectional) or 'axial mode' (large, highly directional) — just by changing its size relative to the wavelength."
+      ],
+      theory: "In axial mode, a helix with circumference near one wavelength radiates a focused beam directly along its own axis, with the wave's electric field naturally rotating as it travels — giving circular polarization without any extra circuitry. That built-in CP behavior, combined with decent gain and simple construction, is why helices are a staple for satellite telemetry, deep-space links, and any application where the receiver's orientation relative to the transmitter can't be guaranteed."
+    }
+  };
+
+  const reconIntros = {
+    wire: "A reconfigurable wire antenna typically changes its electrical length or loading — switching which segment of the wire is active shifts its resonant frequency or reshapes its pattern.",
+    patch: "This is exactly the territory your project sits in: switching slots, stubs, or feed points on a patch reconfigures its frequency, beam direction, or polarization.",
+    loop: "A reconfigurable loop usually switches its effective circumference or adds capacitive loading, shifting resonance or beam shape without changing its physical size.",
+    helical: "Reconfigurable helices are less common but appear in adaptive satellite terminals — switching pitch or active turns can shift frequency or polarization sense."
+  };
+
+  const grid = document.getElementById('type-grid');
+  Object.keys(antennaData).forEach(key => {
+    const d = antennaData[key];
+    const card = document.createElement('div');
+    card.className = 'type-card';
+    card.tabIndex = 0;
+    card.dataset.type = key;
+    card.innerHTML = icons[key] + `<h4>${d.name.split('(')[0].trim()}</h4><p>${d.blurb}</p>`;
+    grid.appendChild(card);
+  });
+
+  const stepType = document.getElementById('step-type');
+  const stepMode = document.getElementById('step-mode');
+  const stepContent = document.getElementById('step-content');
+  const crumb = document.getElementById('explorer-crumb');
+  const crumbText = document.getElementById('explorer-crumb-text');
+  const backBtn = document.getElementById('explorer-back');
+  const modeSub = document.getElementById('mode-sub');
+
+  let selectedType = null;
+
+  function showStep(step){
+    stepType.style.display = step === 'type' ? '' : 'none';
+    stepMode.style.display = step === 'mode' ? '' : 'none';
+    stepContent.style.display = step === 'content' ? '' : 'none';
+    crumb.style.display = step === 'type' ? 'none' : 'flex';
+  }
+
+  function selectType(key){
+    selectedType = key;
+    modeSub.textContent = `You picked ${antennaData[key].name}. Now choose a lens to view it through.`;
+    crumbText.textContent = antennaData[key].name;
+    showStep('mode');
+  }
+
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.type-card');
+    if (card) selectType(card.dataset.type);
+  });
+  grid.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const card = e.target.closest('.type-card');
+      if (card) { e.preventDefault(); selectType(card.dataset.type); }
+    }
+  });
+
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.addEventListener('click', () => renderContent(card.dataset.mode));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); renderContent(card.dataset.mode); }
+    });
+  });
+
+  function renderContent(mode){
+    const d = antennaData[selectedType];
+    crumbText.textContent = d.name + ' — ' + (mode === 'normal' ? 'Normal working' : 'Reconfigurability');
+
+    if (mode === 'normal') {
+      stepContent.innerHTML = `
+        <div class="content-hero">
+          ${icons[selectedType]}
+          <div><h3>${d.name}</h3><p>${d.blurb}</p></div>
+        </div>
+        <div class="facts-row">
+          ${d.facts.map(f => `<div class="fact-card"><span class="tag">FUN FACT</span>${f}</div>`).join('')}
+        </div>
+        <div class="theory-block">${d.theory}</div>
+      `;
+    } else {
+      stepContent.innerHTML = `
+        <div class="content-hero">
+          ${icons[selectedType]}
+          <div><h3>Reconfigurable ${d.name}</h3><p>${reconIntros[selectedType]}</p></div>
+        </div>
+
+        <div class="theory-block" style="margin-bottom:24px;">
+          A <strong>reconfigurable antenna</strong> can change one of its fundamental operating characteristics — frequency, radiation pattern, or polarization — electronically, using switches like PIN diodes, varactors, or RF-MEMS, instead of needing a physically different antenna. That matters in modern devices because space, weight, and cost usually only allow for one antenna: a phone, drone, or satellite terminal that can retune itself avoids stacking multiple fixed antennas side by side, and can adapt on the fly to changing channel conditions, standards, or interference.
+        </div>
+
+        <div class="recon-grid">
+          <div class="recon-card"><span class="tag">TYPE 01</span><h4>Frequency reconfigurable</h4><p>Switches change the antenna's electrical length, shifting its resonant frequency — useful for devices that must hop between bands (GPS, Wi-Fi, LTE) with one radiator.</p></div>
+          <div class="recon-card"><span class="tag">TYPE 02</span><h4>Pattern reconfigurable</h4><p>Switching parasitic elements or feed points steers or reshapes the main beam — a cheap alternative to a full phased array for beam steering or interference avoidance.</p></div>
+          <div class="recon-card"><span class="tag">TYPE 03</span><h4>Polarization reconfigurable</h4><p>The subject of this project — switching slots or feed symmetry changes the radiated polarization between linear and circular (RHCP/LHCP) states.</p></div>
+        </div>
+
+        <div class="explorer-sub" style="margin-bottom:8px;">These aren't mutually exclusive — real designs increasingly combine two or all three:</div>
+        <div class="combo-row">
+          <div class="combo-pill">Frequency <span class="plus">+</span> Polarization</div>
+          <div class="combo-pill">Frequency <span class="plus">+</span> Pattern</div>
+          <div class="combo-pill">Pattern <span class="plus">+</span> Polarization</div>
+          <div class="combo-pill">All three <span class="plus">+</span> combined</div>
+        </div>
+
+        <div class="explorer-sub" style="margin-bottom:8px;">Recent advancements worth knowing:</div>
+        <div class="advances-list">
+          <div class="advance-item"><span class="marker">→</span><p><strong>RF-MEMS and graphene switches</strong> — replacing PIN diodes with lower-loss, lower-power switching elements at millimeter-wave frequencies.</p></div>
+          <div class="advance-item"><span class="marker">→</span><p><strong>Liquid-metal and liquid-crystal antennas</strong> — physically reshaping the radiator itself for continuous, rather than discrete, reconfiguration.</p></div>
+          <div class="advance-item"><span class="marker">→</span><p><strong>Reconfigurable Intelligent Surfaces (RIS)</strong> — large arrays of reconfigurable elements proposed for 6G, redirecting signals around obstacles rather than radiating from a single point.</p></div>
+          <div class="advance-item"><span class="marker">→</span><p><strong>Machine-learning-driven control</strong> — using real-time channel feedback to decide the antenna's state automatically, rather than a fixed switching sequence.</p></div>
+        </div>
+      `;
+    }
+    showStep('content');
+  }
+
+  backBtn.addEventListener('click', () => {
+    if (stepContent.style.display !== 'none') { showStep('mode'); }
+    else { showStep('type'); }
+  });
+})();
+</script>
+
+</body>
+</html>
