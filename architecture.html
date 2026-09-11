@@ -22,16 +22,44 @@
 
 <section>
   <div class="wrap">
-    <div class="flow">
-      <div class="flow-block accent">FPGA<span class="flow-sub">HDL state machine</span></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-block">Driver / level shift<span class="flow-sub">logic → bias current</span></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-block">Bias network<span class="flow-sub">RF choke + DC block</span></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-block">PIN diodes<span class="flow-sub">D1, D2</span></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-block accent">Antenna<span class="flow-sub">radiated polarization</span></div>
+    <div class="section-head">
+      <div class="kicker mono">Signal Path</div>
+      <h2>Pick a state — watch it travel from FPGA to antenna.</h2>
+    </div>
+    <div class="fpga-state-picker">
+      <button class="state-btn active" data-arch-state="lp">LINEAR<br>D1 ON · D2 ON</button>
+      <button class="state-btn" data-arch-state="rhcp">RHCP<br>D1 OFF · D2 ON</button>
+      <button class="state-btn" data-arch-state="lhcp">LHCP<br>D1 ON · D2 OFF</button>
+    </div>
+    <div class="flow" id="fpga-flow">
+      <div class="flow-block accent" data-stage="0">FPGA<span class="flow-sub">HDL state machine</span></div>
+      <div class="flow-arrow" data-stage-arrow="0">→</div>
+      <div class="flow-block" data-stage="1">Driver / level shift<span class="flow-sub">logic → bias current</span></div>
+      <div class="flow-arrow" data-stage-arrow="1">→</div>
+      <div class="flow-block" data-stage="2">Bias network<span class="flow-sub">RF choke + DC block</span></div>
+      <div class="flow-arrow" data-stage-arrow="2">→</div>
+      <div class="flow-block" data-stage="3">PIN diodes<span class="flow-sub" id="diode-readout">D1, D2</span></div>
+      <div class="flow-arrow" data-stage-arrow="3">→</div>
+      <div class="flow-block accent" data-stage="4">Antenna<span class="flow-sub" id="pol-readout">radiated polarization</span></div>
+    </div>
+    <p class="fine mono" style="margin-top:14px;">Digital control (FPGA → driver → bias network) never carries the RF signal — it only sets DC bias conditions. The RF path runs entirely on the patch and diodes to the right of the bias network.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker mono">04 — Project Status</div>
+      <h2>Where this actually stands right now.</h2>
+    </div>
+    <div class="status-list">
+      <div class="status-item done"><span class="status-icon">✓</span><span>Concept — corner-slot switching geometry defined</span></div>
+      <div class="status-item done"><span class="status-icon">✓</span><span>Antenna geometry — patch dimensions and slot placement finalized</span></div>
+      <div class="status-item done"><span class="status-icon">✓</span><span>Initial CST model — built and running</span></div>
+      <div class="status-item progress"><span class="status-icon">◐</span><span>PIN diode simulation — lumped RLC modelling in progress</span></div>
+      <div class="status-item progress"><span class="status-icon">◐</span><span>FPGA control — HDL state machine in development</span></div>
+      <div class="status-item pending"><span class="status-icon">○</span><span>PCB fabrication</span></div>
+      <div class="status-item pending"><span class="status-icon">○</span><span>Hardware validation</span></div>
     </div>
   </div>
 </section>
@@ -50,5 +78,36 @@
 
 <footer id="site-footer"></footer>
 <script src="common.js"></script>
+<script>
+(function(){
+  const states = {
+    lp:   { d1:'ON',  d2:'ON',  label:'LINEAR' },
+    rhcp: { d1:'OFF', d2:'ON',  label:'RHCP'   },
+    lhcp: { d1:'ON',  d2:'OFF', label:'LHCP'   }
+  };
+  const buttons = document.querySelectorAll('[data-arch-state]');
+  const stages = document.querySelectorAll('[data-stage]');
+  const arrows = document.querySelectorAll('[data-stage-arrow]');
+  const diodeReadout = document.getElementById('diode-readout');
+  const polReadout = document.getElementById('pol-readout');
+
+  function playSignal(key){
+    const s = states[key];
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.archState === key));
+    diodeReadout.textContent = `D1 ${s.d1} · D2 ${s.d2}`;
+    polReadout.textContent = s.label;
+    stages.forEach(el => el.classList.remove('flow-active'));
+    arrows.forEach(el => el.classList.remove('flow-active'));
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced){ stages.forEach(el => el.classList.add('flow-active')); return; }
+    [0,1,2,3,4].forEach(i => {
+      setTimeout(() => document.querySelector(`[data-stage="${i}"]`).classList.add('flow-active'), i * 220);
+      if (i < 4) setTimeout(() => document.querySelector(`[data-stage-arrow="${i}"]`).classList.add('flow-active'), i * 220 + 110);
+    });
+  }
+  buttons.forEach(b => b.addEventListener('click', () => playSignal(b.dataset.archState)));
+  playSignal('lp');
+})();
+</script>
 </body>
 </html>

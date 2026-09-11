@@ -22,8 +22,14 @@
 
 <section>
   <div class="wrap">
+    <div class="results-tabs" role="tablist" aria-label="Polarization state">
+      <button class="result-tab active" data-tab="linear" role="tab" aria-selected="true">LINEAR</button>
+      <button class="result-tab" data-tab="rhcp" role="tab" aria-selected="false">RHCP</button>
+      <button class="result-tab" data-tab="lhcp" role="tab" aria-selected="false">LHCP</button>
+    </div>
+
     <div class="results-grid">
-      <div class="chart-card">
+      <div class="chart-card" style="grid-column:1 / -1;">
         <span class="stamp">ILLUSTRATIVE</span>
         <h4>Return loss (S11) — all three states</h4>
         <svg viewBox="0 0 300 160" width="100%">
@@ -37,7 +43,7 @@
           <text x="150" y="152" fill="#8FA3BE" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">2.0 — 2.8 GHz</text>
         </svg>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" data-cp-only>
         <span class="stamp">ILLUSTRATIVE</span>
         <h4>Axial ratio — CP states only</h4>
         <svg viewBox="0 0 300 160" width="100%">
@@ -50,15 +56,45 @@
           <text x="150" y="152" fill="#8FA3BE" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">2.0 — 2.8 GHz</text>
         </svg>
       </div>
+      <div class="chart-card placeholder-card">
+        <span class="stamp">PENDING</span>
+        <h4>Gain — <span class="tab-label">LINEAR</span></h4>
+        <div class="placeholder-body">Awaiting CST far-field export for this state.</div>
+      </div>
+      <div class="chart-card placeholder-card">
+        <span class="stamp">PENDING</span>
+        <h4>Radiation pattern — <span class="tab-label">LINEAR</span></h4>
+        <div class="placeholder-body">Awaiting CST far-field export for this state.</div>
+      </div>
+      <div class="chart-card placeholder-card">
+        <span class="stamp">PENDING</span>
+        <h4>Efficiency — <span class="tab-label">LINEAR</span></h4>
+        <div class="placeholder-body">Awaiting CST efficiency export for this state.</div>
+      </div>
     </div>
 
     <div class="theory-block" style="margin-top:28px;">
-      <strong>Once your CST simulations are done:</strong> export each plot as a PNG (Post-Processing → right-click plot → Export → PNG), add the image files to this same folder, then replace the two <span class="mono">&lt;svg&gt;...&lt;/svg&gt;</span> blocks above with <span class="mono">&lt;img src="your-file.png" style="width:100%; border-radius:4px;"&gt;</span> and delete the "ILLUSTRATIVE" stamp.
+      <strong>Once your CST simulations are done:</strong> export each plot as a PNG (Post-Processing → right-click plot → Export → PNG), add the image files to this same folder, then replace the corresponding <span class="mono">&lt;svg&gt;...&lt;/svg&gt;</span> block or <span class="mono">.placeholder-body</span> above with <span class="mono">&lt;img src="your-file.png" style="width:100%; border-radius:4px;"&gt;</span> and delete the "ILLUSTRATIVE" / "PENDING" stamp. The tabs already route by state — S11 stays a single all-states chart, while gain, pattern, efficiency, and axial ratio swap per tab.
     </div>
   </div>
 </section>
 
 <footer id="site-footer"></footer>
 <script src="common.js"></script>
+<script>
+(function(){
+  const labels = { linear: "LINEAR", rhcp: "RHCP", lhcp: "LHCP" };
+  const tabs = document.querySelectorAll('.result-tab');
+  const cpOnly = document.querySelectorAll('[data-cp-only]');
+  const tabLabels = document.querySelectorAll('.tab-label');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+    t.classList.add('active'); t.setAttribute('aria-selected', 'true');
+    const key = t.dataset.tab;
+    tabLabels.forEach(l => l.textContent = labels[key]);
+    cpOnly.forEach(c => c.style.display = key === 'linear' ? 'none' : '');
+  }));
+})();
+</script>
 </body>
 </html>
